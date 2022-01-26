@@ -1,0 +1,487 @@
+;-------------------------------- DEFINITIONS ----------------------------------
+; key pointer
+#define KPTR    R13
+#define RKPTR   R12
+
+; key words for intialization
+#define RK0L     R4
+#define RK0H     R5
+#define RK1L     R6
+#define RK1H     R7
+#define RK2L     R8
+#define RK2H     R9
+#define RK3L     R10
+#define RK3H     R11
+
+; loop counters
+#define NR      R11
+#define I       R14
+#define I_      R15
+
+; classical keyschedule
+#define WORDLO  R10
+#define WORDHI  R9
+
+#define TLO     R8
+#define THI     R7
+
+; fixslicing representation
+#define TMP     R9
+  
+;------------------------------- GENERAL MACROS --------------------------------
+
+; push callee-saved registers onto the stack
+PROLOGUE MACRO
+  PUSH.W  R4
+  PUSH.W  R5
+  PUSH.W  R6
+  PUSH.W  R7
+  PUSH.W  R8
+  PUSH.W  R9
+  PUSH.W  R10
+  ENDM
+
+; pop callee-saved registers form stack
+EPILOGUE MACRO
+  POP.W   R10
+  POP.W   R9
+  POP.W   R8
+  POP.W   R7
+  POP.W   R6
+  POP.W   R5
+  POP.W   R4
+  ENDM
+  
+;----------------------- CLASSICAL INITIALIZATION MACROS -----------------------
+
+LDINITRKEY       MACRO
+  ; load with 16-bit implicit rotation in correct order
+  MOV.W @KPTR+, RK3H
+  MOV.W @KPTR+, RK3L
+  MOV.W @KPTR+, RK1H
+  MOV.W @KPTR+, RK1L
+  MOV.W @KPTR+, RK2H
+  MOV.W @KPTR+, RK2L
+  MOV.W @KPTR+, RK0H
+  MOV.W @KPTR+, RK0L
+  SUB.W #16, KPTR
+  ; U32BIG swap bytes
+  SWPB  RK0L
+  SWPB  RK0H
+  SWPB  RK1L
+  SWPB  RK1H
+  SWPB  RK2L
+  SWPB  RK2H
+  SWPB  RK3L
+  SWPB  RK3H
+  ; Save into rkey register
+  MOV.W RK0L, 0(RKPTR)
+  MOV.W RK0H, 2(RKPTR)
+  MOV.W RK1L, 4(RKPTR)
+  MOV.W RK1H, 6(RKPTR)
+  MOV.W RK2L, 8(RKPTR)
+  MOV.W RK2H, 10(RKPTR)
+  MOV.W RK3L, 12(RKPTR)
+  MOV.W RK3H, 14(RKPTR)
+  ENDM
+  
+KEY_UPDATE MACRO LO, HI
+
+  SWPB LO
+  MOV.B LO, TLO
+  SWPB LO
+  RRA   TLO
+  RRA   TLO
+  RRA   TLO
+  RRA   TLO
+  AND.W #0x000f, TLO
+
+  AND.W #0x0fff, LO
+  RLA   LO
+  RLA   LO
+  RLA   LO
+  RLA   LO
+  BIS.W TLO, LO
+  
+  MOV.W HI, THI
+  AND.W #0x0003, THI
+  MOV.B THI, THI
+  SWPB  THI
+  RLA   THI
+  RLA   THI
+  RLA   THI
+  RLA   THI
+  RLA   THI
+  RLA   THI
+
+  RRA   HI
+  RRA   HI
+  AND.W #0x3fff, HI
+  BIS.W THI, HI
+  ENDM
+  
+CLASSICAL_KEYSCHEDULE     MACRO 
+  ; initialize loop counter 
+  MOV.W #76, NR
+  ; initialize the i / i+1 pointer
+  MOV.W RKPTR, I
+  ADD.W #16, I
+  ; initialize the i-3 / i-4 pointer
+  MOV.W RKPTR, I_
+  ADD.W #4, I_
+  
+  loop:
+    ; rkey[i] = rkey[i-3]
+    MOV.W 0(I_), 0(I)
+    MOV.W 2(I_), 2(I)
+    ; update pointers
+    ADD.W #4, I
+    SUB.W #4, I_
+    ; write rkey[i-4] to register
+    MOV.W 0(I_), WORDLO
+    MOV.W 2(I_), WORDHI
+    ; key update
+    KEY_UPDATE WORDLO, WORDHI
+    ; write back to memory
+    MOV.W WORDLO, 0(I)
+    MOV.W WORDHI, 2(I)
+    
+    ADD.W #4, I
+    ADD.W #12, I_
+    
+    SUB.W #2, NR
+    
+    JZ term
+    BR #loop
+  
+  term:
+  ENDM
+  
+
+;------------------------------ SWAPMOVE MACROS --------------------------------
+  
+
+SWAPMOVE_3 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, THI
+  MOV.W ALO, TLO
+  ; a >> 3
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  ; b ^ (a >> 3)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 3)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 3
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  ; a ^= (tmp << 3)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+SWAPMOVE_6 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, THI
+  MOV.W ALO, TLO
+  ; a >> 6
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  RRA.W THI
+  RRC.W TLO
+  ; b ^ (a >> 3)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 3)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 6
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  ; a ^= (tmp << 3)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+SWAPMOVE_9 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, THI
+  MOV.W ALO, TLO
+  ; a >> 9
+  MOV.W THI, TMP
+  SWPB THI
+  SWPB TLO
+  MOV.B THI, THI
+  MOV.B TLO, TLO
+  MOV.B TMP, TMP
+  SWPB TMP
+  XOR.W TMP, TLO
+  RRA.W THI
+  RRC.W TLO
+  ; b ^ (a >> 9)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 9)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 9
+  MOV.W TLO, TMP
+  MOV.B THI, THI
+  MOV.B TLO, TLO
+  SWPB TMP
+  SWPB THI
+  SWPB TLO
+  MOV.B TMP, TMP
+  SWPB TMP
+  XOR.W TMP, THI
+  RLA.W TLO
+  RLC.W THI
+  ; a ^= (tmp << 9)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+SWAPMOVE_12 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, TLO
+  MOV.W ALO, TMP
+  ; a >> 12
+  MOV.W #0, THI
+  BIT.W #0x8000, TMP
+  RLC.W TLO
+  RLC.W THI
+  BIT.W #0x4000, TMP
+  RLC.W TLO
+  RLC.W THI
+  BIT.W #0x2000, TMP
+  RLC.W TLO
+  RLC.W THI
+  BIT.W #0x1000, TMP
+  RLC.W TLO
+  RLC.W THI
+  ; b ^ (a >> 12)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 12)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 12
+  MOV.W THI, TMP
+  MOV.W TLO, THI
+  MOV.W #0, TLO
+  BIT.W #1, TMP
+  RRC.W THI
+  RRC.W TLO
+  BIT.W #2, TMP
+  RRC.W THI
+  RRC.W TLO
+  BIT.W #4, TMP
+  RRC.W THI
+  RRC.W TLO
+  BIT.W #8, TMP
+  RRC.W THI
+  RRC.W TLO
+  ; a ^= (tmp << 12)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+SWAPMOVE_15 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, TLO
+  MOV.W ALO, TMP
+  ; a >> 15
+  MOV.W #0, THI
+  BIT.W #0x8000, TMP
+  RLC.W TLO
+  RLC.W THI
+  ; b ^ (a >> 15)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 15)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 15
+  MOV.W THI, TMP
+  MOV.W TLO, THI
+  MOV.W #0, TLO
+  BIT.W #1 , TMP
+  RRC.W THI
+  RRC.W TLO
+  ; a ^= (tmp << 15)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+  
+SWAPMOVE_18 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, TLO
+  MOV.W #0, THI
+  ; a >> 18
+  RRA.W TLO
+  RRA.W TLO
+  ; b ^ (a >> 18)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 18)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 18
+  MOV.W TLO, THI
+  MOV.W #0, TLO
+  RLA.W THI
+  RLA.W THI
+  ; a ^= (tmp << 18)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+SWAPMOVE_24 MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, TLO
+  MOV.W #0, THI
+  ; a >> 24
+  SWPB  TLO
+  MOV.B TLO, TLO
+  ; b ^ (a >> 24)
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  ; (b ^ (a >> 24)) & mask
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  ; b ^= tmp
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  ; tmp << 24
+  MOV.B TLO, THI
+  MOV.W #0, TLO
+  SWPB THI
+  ; a ^= (tmp << 24)
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+;--------------------------- REARRANGE RKEYS MACROS ----------------------------
+  
+REARRANGE_RKEY_0        MACRO   HI, LO
+  SWAPMOVE_9    HI, LO, HI, LO, #0x0055, #0x0055
+  SWAPMOVE_12   HI, LO, HI, LO, #0x000f, #0x000f
+  SWAPMOVE_18   HI, LO, HI, LO, #0x0000, #0x3333
+  SWAPMOVE_24   HI, LO, HI, LO, #0x0000, #0x00ff
+  ENDM
+
+REARRANGE_RKEY_1        MACRO   HI, LO
+  SWAPMOVE_3    HI, LO, HI, LO, #0x1111, #0x1111
+  SWAPMOVE_6    HI, LO, HI, LO, #0x0303, #0x0303
+  SWAPMOVE_12   HI, LO, HI, LO, #0x000f, #0x000f
+  SWAPMOVE_24   HI, LO, HI, LO, #0x0000, #0x00ff
+  ENDM
+  
+REARRANGE_RKEY_2        MACRO   HI, LO
+  SWAPMOVE_15   HI, LO, HI, LO, #0x0000, #0xaaaa
+  SWAPMOVE_18   HI, LO, HI, LO, #0x0000, #0x3333
+  SWAPMOVE_12   HI, LO, HI, LO, #0x0000, #0xf0f0
+  SWAPMOVE_24   HI, LO, HI, LO, #0x0000, #0x00ff
+  ENDM
+  
+REARRANGE_RKEY_3        MACRO   HI, LO
+  SWAPMOVE_3    HI, LO, HI, LO, #0x0a0a, #0x0a0a
+  SWAPMOVE_6    HI, LO, HI, LO, #0x00cc, #0x00cc
+  SWAPMOVE_12   HI, LO, HI, LO, #0x0000, #0xf0f0
+  SWAPMOVE_24   HI, LO, HI, LO, #0x0000, #0x00ff
+  ENDM
+ 
+TRANSPOSITION   MACRO
+  MOV.W #8, NR
+  MOV.W RKPTR, I
+  
+  transposition_loop:
+  REARRANGE_RKEY_0      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_0      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_1      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_1      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_2      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_2      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_3      2(RKPTR), 0(RKPTR)
+  ADD.W #4, RKPTR
+  REARRANGE_RKEY_3      2(RKPTR), 0(RKPTR)
+  ADD.W #12, RKPTR
+  
+  SUB.W #1, NR 
+  JZ transpoition_term
+  BR #transposition_loop
+  
+  transpoition_term:
+  SUB.W #320, RKPTR
+  ENDM
+    
+;-------------------------------- Directives -----------------------------------
+
+NAME precompute_rkeys_msp
+PUBLIC precompute_rkeys_msp
+RSEG CODE
+
+;----------------------------------- MAIN --------------------------------------
+
+
+precompute_rkeys_msp:
+  PROLOGUE 
+  
+  LDINITRKEY
+  
+  CLASSICAL_KEYSCHEDULE
+
+  TRANSPOSITION
+
+  EPILOGUE
+  RET
+  
+END
+  
+

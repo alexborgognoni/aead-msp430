@@ -1,0 +1,543 @@
+;-------------------------------- DEFINITIONS ----------------------------------
+
+; pointers
+#define SPTR    R12
+
+
+; state words
+#define S0H     R4
+#define S0L     R5
+#define S1H     R6
+#define S1L     R7
+#define S2H     R8
+#define S2L     R9
+#define S3H     R10
+#define S3L     R11
+
+#define IMV     R13
+#define CLR     R13
+#define THI     R14
+#define TLO     R15
+
+#define RKPTR   R14
+#define CPTR    R13
+
+#define OFF     R12
+#define NR      R15
+;------------------------------- GENERAL MACROS --------------------------------
+
+; push callee-saved registers onto the stack
+PROLOGUE MACRO
+  PUSH.W  R4
+  PUSH.W  R5
+  PUSH.W  R6
+  PUSH.W  R7
+  PUSH.W  R8
+  PUSH.W  R9
+  PUSH.W  R10
+  ENDM
+
+; pop callee-saved registers form stack
+EPILOGUE MACRO
+  POP.W   R10
+  POP.W   R9
+  POP.W   R8
+  POP.W   R7
+  POP.W   R6
+  POP.W   R5
+  POP.W   R4
+  ENDM
+    
+; load state
+LOAD_STATE      MACRO
+  MOV.W @SPTR+, S0L       
+  MOV.W @SPTR+, S0H       
+  MOV.W @SPTR+, S1L       
+  MOV.W @SPTR+, S1H       
+  MOV.W @SPTR+, S2L       
+  MOV.W @SPTR+, S2H       
+  MOV.W @SPTR+, S3L       
+  MOV.W @SPTR+, S3H      
+  SUB.W #16, SPTR
+  ENDM
+    
+SAVE_STATE      MACRO
+  MOV.W S0L, 0(SPTR)
+  MOV.W S0H, 2(SPTR)
+  MOV.W S1L, 4(SPTR)
+  MOV.W S1H, 6(SPTR)
+  MOV.W S2L, 8(SPTR)
+  MOV.W S2H, 10(SPTR)
+  MOV.W S3L, 12(SPTR)
+  MOV.W S3H, 14(SPTR)
+  ENDM
+
+;------------------------------ ROTATION MACROS --------------------------------
+
+BYTE_ROR_2    MACRO
+  MOV.B S2H, TLO
+  SWPB S2H
+  BIT.W #1, TLO
+  RRC.B TLO
+  BIT.W #1, TLO
+  RRC.B TLO
+  BIT.W #1, S2H
+  RRC.B S2H
+  BIT.W #1, S2H
+  RRC.B S2H
+  SWPB S2H
+  XOR.W TLO, S2H
+
+  MOV.B S2L, TLO
+  SWPB S2L
+  BIT.W #1, TLO
+  RRC.B TLO
+  BIT.W #1, TLO
+  RRC.B TLO
+  BIT.W #1, S2L
+  RRC.B S2L
+  BIT.W #1, S2L
+  RRC.B S2L
+  SWPB S2L
+  XOR.W TLO, S2L
+  ENDM
+
+BYTE_ROR_4   MACRO
+  MOV.W #0x0f0f, IMV
+  MOV.W S1H, THI
+  MOV.W S1L, TLO
+  ; S1 >> 4
+  RRA.W S1H
+  RRC.W S1L
+  RRA.W S1H
+  RRC.W S1L
+  RRA.W S1H
+  RRC.W S1L
+  RRA.W S1H
+  RRC.W S1L
+  ; (S1 >> 4) & 0x0f0f0f0f
+  AND.W IMV, S1H
+  AND.W IMV, S1L
+  ; TMP & 0x0f0f0f0f
+  AND.W IMV, THI
+  AND.W IMV, TLO
+  ; (TMP & 0x0f0f0f0f) << 4
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  ; (S1 >> 4) & 0x03030303 |(TMP & 0x0f0f0f0f) << 4
+  BIS.W THI, S1H
+  BIS.W TLO, S1L
+  ENDM
+  
+BYTE_ROR_6    MACRO
+  MOV.B S0H, TLO
+  MOV.W #0x80, THI
+  SWPB S0H
+  BIT.W THI, TLO
+  RLC.B TLO
+  BIT.W THI, TLO
+  RLC.B TLO
+  BIT.W THI, S0H
+  RLC.B S0H
+  BIT.W THI, S0H
+  RLC.B S0H
+  SWPB S0H
+  XOR.W TLO, S0H
+
+  MOV.B S0L, TLO
+  SWPB S0L
+  BIT.W THI, TLO
+  RLC.B TLO
+  BIT.W THI, TLO
+  RLC.B TLO
+  BIT.W THI, S0L
+  RLC.B S0L
+  BIT.W THI, S0L
+  RLC.B S0L
+  SWPB S0L
+  XOR.W TLO, S0L
+  ENDM
+
+HALF_ROR_4    MACRO
+  BIT.W #1, S0L
+  RRC.W S0L
+  BIT.W #1, S0L
+  RRC.W S0L
+  BIT.W #1, S0L
+  RRC.W S0L
+  BIT.W #1, S0L
+  RRC.W S0L
+  BIT.W #1, S0H
+  RRC.W S0H
+  BIT.W #1, S0H
+  RRC.W S0H
+  BIT.W #1, S0H
+  RRC.W S0H
+  BIT.W #1, S0H
+  RRC.W S0H
+  ENDM
+  
+HALF_ROR_8    MACRO
+  SWPB S1H
+  SWPB S1L
+  ENDM
+  
+HALF_ROR_12    MACRO
+  MOV.W #0x8000, TLO
+  BIT.W TLO, S2H
+  RLC.W S2H
+  BIT.W TLO, S2H
+  RLC.W S2H
+  BIT.W TLO, S2H
+  RLC.W S2H
+  BIT.W TLO, S2H
+  RLC.W S2H
+  BIT.W TLO, S2L
+  RLC.W S2L
+  BIT.W TLO, S2L
+  RLC.W S2L
+  BIT.W TLO, S2L
+  RLC.W S2L
+  BIT.W TLO, S2L
+  RLC.W S2L
+  ENDM
+
+NIBBLE_ROR_1    MACRO
+  MOV.W #0x7777, IMV
+  MOV.W S3H, THI
+  MOV.W S3L, TLO
+  ; S3 >> 1
+  RRA.W S3H
+  RRC.W S3L
+  ; (S3 >> 1) & 0x77777777
+  AND.W IMV, S3H
+  AND.W IMV, S3L
+  ; TMP & 0x11111111
+  MOV.W #0x1111, IMV
+  AND.W IMV, THI
+  AND.W IMV, TLO
+  ; (TMP & 0x11111111) << 3
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  ; (S3 >> 1) & 0x77777777 |(TMP & 0x11111111) << 3
+  BIS.W THI, S3H
+  BIS.W TLO, S3L
+  ENDM
+
+NIBBLE_ROR_2    MACRO
+  MOV.W #0x3333, IMV
+  MOV.W S1H, THI
+  MOV.W S1L, TLO
+  ; S1 >> 2
+  RRA.W S1H
+  RRC.W S1L
+  RRA.W S1H
+  RRC.W S1L
+  ; (S1 >> 2) & 0x33333333
+  AND.W IMV, S1H
+  AND.W IMV, S1L
+  ; TMP & 0x33333333
+  AND.W IMV, THI
+  AND.W IMV, TLO
+  ; (TMP & 0x11111111) << 2
+  RLA.W TLO
+  RLC.W THI
+  RLA.W TLO
+  RLC.W THI
+  ; (S1 >> 2) & 0x33333333 |(TMP & 0x33333333) << 2
+  BIS.W THI, S1H
+  BIS.W TLO, S1L
+  ENDM
+  
+NIBBLE_ROR_3    MACRO
+  MOV.W #0x1111, IMV
+  MOV.W S2H, THI
+  MOV.W S2L, TLO
+  ; S2 >> 3
+  RRA.W S2H
+  RRC.W S2L
+  RRA.W S2H
+  RRC.W S2L
+  RRA.W S2H
+  RRC.W S2L
+  ; (S2 >> 3) & 0x11111111
+  AND.W IMV, S2H
+  AND.W IMV, S2L
+  ; TMP & 0x77777777
+  MOV.W #0x7777, IMV
+  AND.W IMV, THI
+  AND.W IMV, TLO
+  ; (TMP & 0x77777777) << 1
+  RLA.W TLO
+  RLC.W THI
+  ; (S2 >> 3) & 0x11111111 |(TMP & 0x77777777) << 1
+  BIS.W THI, S2H
+  BIS.W TLO, S2L
+  ENDM
+
+
+;--------------------------------- SBOX MACRO ----------------------------------
+
+SBOX MACRO S0H, S0L, S1H, S1L, S2H, S2L, S3H, S3L
+  ; s1 ^= s0 & s2	
+  MOV.W S0H, THI
+  MOV.W S0L, TLO
+  AND.W S2H, THI
+  AND.W S2L, TLO
+  XOR.W THI, S1H
+  XOR.W TLO, S1L
+  ; s0 ^= s1 & s3
+  MOV.W S1H, THI
+  MOV.W S1L, TLO
+  AND.W S3H, THI
+  AND.W S3L, TLO
+  XOR.W THI, S0H
+  XOR.W TLO, S0L
+  ; s2 ^= s0 | s1
+  MOV.W S0H, THI
+  MOV.W S0L, TLO
+  BIS.W S1H, THI
+  BIS.W S1L, TLO
+  XOR.W THI, S2H
+  XOR.W TLO, S2L
+  ; s3 ^= s2
+  XOR.W S2H, S3H
+  XOR.W S2L, S3L
+  ; s1 ^= s3
+  XOR.W S3H, S1H
+  XOR.W S3L, S1L
+  ; s3 ^= 0xffffffff
+  INV.W S3H
+  INV.W S3L
+  ; s2 ^= s0 & s1
+  MOV.W S0H, THI
+  MOV.W S0L, TLO
+  AND.W S1H, THI
+  AND.W S1L, TLO
+  XOR.W THI, S2H
+  XOR.W TLO, S2L
+  ENDM
+  
+SWAPMOVE MACRO AHI, ALO, BHI, BLO, MHI, MLO
+  MOV.W AHI, THI
+  MOV.W ALO, TLO
+  RRA.W THI
+  RRC.W TLO
+  XOR.W BHI, THI
+  XOR.W BLO, TLO
+  AND.W MHI, THI
+  AND.W MLO, TLO
+  XOR.W THI, BHI
+  XOR.W TLO, BLO
+  RLA.W TLO
+  RLC.W THI
+  XOR.W THI, AHI
+  XOR.W TLO, ALO
+  ENDM
+  
+;------------------------------- ROUND MACROS ----------------------------------
+
+ROUND0  MACRO   OFF
+  SBOX S0H, S0L, S1H, S1L, S2H, S2L, S3H, S3L
+  NIBBLE_ROR_1
+  NIBBLE_ROR_2
+  NIBBLE_ROR_3
+  MOV.W 2(SP), RKPTR
+  ADD.W OFF, RKPTR
+  ADD.W OFF, RKPTR
+  XOR.W 0(RKPTR), S1L
+  XOR.W 2(RKPTR), S1H
+  XOR.W 4(RKPTR), S2L
+  XOR.W 6(RKPTR), S2H
+  MOV.W #RCON, CPTR
+  ADD.W OFF, CPTR
+  XOR.W 0(CPTR), S0H
+  XOR.W 2(CPTR), S0L
+  ENDM
+
+ROUND1  MACRO   OFF
+  SBOX S3H, S3L, S1H, S1L, S2H, S2L, S0H, S0L
+  HALF_ROR_4
+  HALF_ROR_8
+  HALF_ROR_12
+  MOV.W 2(SP), RKPTR 
+  ADD.W OFF, RKPTR
+  ADD.W OFF, RKPTR
+  XOR.W 8(RKPTR), S1L
+  XOR.W 10(RKPTR), S1H
+  XOR.W 12(RKPTR), S2L
+  XOR.W 14(RKPTR), S2H
+  MOV.W #RCON, CPTR
+  ADD.W OFF, CPTR
+  XOR.W 4(CPTR), S3H
+  XOR.W 6(CPTR), S3L
+  ENDM
+  
+ROUND2  MACRO   OFF
+  SBOX S0H, S0L, S1H, S1L, S2H, S2L, S3H, S3L
+  MOV.W S3L, THI
+  MOV.W S3H, S3L
+  MOV.W THI, S3H
+  MOV.W S2L, THI
+  MOV.W S2H, S2L
+  MOV.W THI, S2H
+  SWAPMOVE S1H, S1L, S1H, S1L, #0x5555, #0x5555
+  SWAPMOVE S2H, S2L, S2H, S2L, #0x0000, #0x5555
+  SWAPMOVE S3H, S3L, S3H, S3L, #0x5555, #0x0000
+  MOV.W 2(SP), RKPTR
+  ADD.W OFF, RKPTR
+  ADD.W OFF, RKPTR
+  XOR.W 16(RKPTR), S1L
+  XOR.W 18(RKPTR), S1H
+  XOR.W 20(RKPTR), S2L
+  XOR.W 22(RKPTR), S2H
+  MOV.W #RCON, CPTR
+  ADD.W OFF, CPTR
+  XOR.W 8(CPTR), S0H
+  XOR.W 10(CPTR), S0L
+  ENDM
+  
+ROUND3  MACRO   OFF
+  SBOX S3H, S3L, S1H, S1L, S2H, S2L, S0H, S0L
+  BYTE_ROR_6
+  BYTE_ROR_4
+  BYTE_ROR_2
+  MOV.W 2(SP), RKPTR
+  ADD.W OFF, RKPTR
+  ADD.W OFF, RKPTR
+  XOR.W 24(RKPTR), S1L
+  XOR.W 26(RKPTR), S1H
+  XOR.W 28(RKPTR), S2L
+  XOR.W 30(RKPTR), S2H
+  MOV.W #RCON, CPTR
+  ADD.W OFF, CPTR
+  XOR.W 12(CPTR), S3H
+  XOR.W 14(CPTR), S3L
+  ENDM
+  
+ROUND4  MACRO   OFF
+  SBOX S0H, S0L, S1H, S1L, S2H, S2L, S3H, S3L
+  
+  ; 16-bit left rot = 24 ROR
+  MOV.W S3H, THI
+  MOV.W S3L, TLO
+  SWPB  THI
+  SWPB  TLO
+  MOV.B S3L, S3L
+  MOV.B S3H, S3H
+  MOV.B TLO, TLO
+  MOV.B THI, THI
+  SWPB S3L
+  SWPB S3H
+  XOR.W TLO, S3H
+  XOR.W THI, S3L
+
+  ; 16-bit ROR
+  MOV.W S1H, THI
+  MOV.W S1L, S1H
+  MOV.W THI, S1L
+  
+  ; 8-bit ROR
+  MOV.W S2H, THI
+  MOV.W S2L, TLO
+  SWPB  S2H
+  SWPB  S2L
+  MOV.B S2L, S2L
+  MOV.B S2H, S2H
+  MOV.B TLO, TLO
+  MOV.B THI, THI
+  SWPB TLO
+  SWPB THI
+  XOR.W TLO, S2H
+  XOR.W THI, S2L
+  
+  MOV.W 2(SP), RKPTR
+  ADD.W OFF, RKPTR
+  ADD.W OFF, RKPTR
+  XOR.W 32(RKPTR), S1L
+  XOR.W 34(RKPTR), S1H
+  XOR.W 36(RKPTR), S2L
+  XOR.W 38(RKPTR), S2H
+  MOV.W #RCON, CPTR
+  ADD.W OFF, CPTR
+  XOR.W 16(CPTR), S0H
+  XOR.W 18(CPTR), S0L
+  
+  XOR.W S3L, S0L
+  XOR.W S3H, S0H
+  XOR.W S0L, S3L
+  XOR.W S0H, S3H
+  XOR.W S3L, S0L
+  XOR.W S3H, S0H
+  ENDM
+  
+QUINTUPLE_ROUND MACRO           OFF
+  ROUND0        OFF
+  ROUND1        OFF
+  ROUND2        OFF
+  ROUND3        OFF
+  ROUND4        OFF
+  ENDM
+  
+;-------------------------------- Directives -----------------------------------
+
+NAME gift128_perm_msp_fixslicing
+PUBLIC gift128_perm_msp_fixslicing
+RSEG CODE
+
+;--------------------------------- MAIN LOOP -----------------------------------
+
+
+gift128_perm_msp_fixslicing:
+  PROLOGUE
+  LOAD_STATE
+  
+  PUSH.W SPTR
+  PUSH.W R13    ; RKPTR
+  MOV.W #8, NR
+  MOV.W #0, OFF
+  
+  loop:
+    PUSH.W NR
+    QUINTUPLE_ROUND OFF
+    POP.W NR
+    ADD.W #20, OFF
+    SUB.W #1, NR
+    JZ term
+    BR #loop
+  
+  term:
+  POP R13
+  POP.W SPTR
+
+    
+  SAVE_STATE
+  EPILOGUE
+  RET
+  
+RSEG DATA16_C:DATA:REORDER:NOROOT(1)
+
+RCON:
+    DC16 0x1000, 0x0008, 0x8001, 0x8000, 0x5400, 0x0002, 0x0101, 0x0181
+    DC16 0x8000, 0x001f, 0x1088, 0x8880, 0x6001, 0xe000, 0x5150, 0x0002
+    DC16 0x0303, 0x0180, 0x8000, 0x002f, 0x1008, 0x8880, 0x6001, 0x6000
+    DC16 0x4150, 0x0002, 0x0303, 0x0080, 0x8000, 0x0027, 0x1000, 0x8880
+    DC16 0x4001, 0xe000, 0x1150, 0x0002, 0x0302, 0x0180, 0x8000, 0x002b
+    DC16 0x1008, 0x0880, 0x6001, 0x4000, 0x0140, 0x0002, 0x0202, 0x0080
+    DC16 0x8000, 0x0021, 0x1000, 0x0080, 0x0001, 0xc000, 0x5100, 0x0002
+    DC16 0x0301, 0x0180, 0x8000, 0x002e, 0x1008, 0x8800, 0x6001, 0x2000
+    DC16 0x4050, 0x0002, 0x0103, 0x0080, 0x8000, 0x0006, 0x1000, 0x8808
+    DC16 0xc001, 0xa000, 0x1450, 0x0002, 0x0102, 0x0181, 0x8000, 0x001a
+END
+  
+

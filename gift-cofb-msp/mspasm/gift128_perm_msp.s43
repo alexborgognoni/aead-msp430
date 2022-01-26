@@ -1,0 +1,427 @@
+;-------------------------------- DEFINITIONS ----------------------------------
+
+; pointers
+#define SPTR    R12
+#define RKPTR   R13
+#define NR      R14
+; state words
+#define S0H     R4
+#define S0L     R5
+#define S1H     R6
+#define S1L     R7
+#define S2H     R8
+#define S2L     R9
+#define S3H     R10
+#define S3L     R11
+; temporary registers
+#define Rtemp   R12
+#define Rmask   R13
+#define TLO     R14
+#define THI     R15
+; round constant
+#define INDEX   R12
+#define CPTR    R15
+; round key registers
+#define W2      R12
+#define W3      R15
+#define W6      R12
+#define W7      R15
+
+;------------------------------- GENERAL MACROS --------------------------------
+
+; push callee-saved registers onto the stack
+PROLOGUE MACRO
+    PUSH.W  R4
+    PUSH.W  R5
+    PUSH.W  R6
+    PUSH.W  R7
+    PUSH.W  R8
+    PUSH.W  R9
+    PUSH.W  R10
+    ENDM
+
+; pop callee-saved registers form stack
+EPILOGUE MACRO
+    POP.W   R10
+    POP.W   R9
+    POP.W   R8
+    POP.W   R7
+    POP.W   R6
+    POP.W   R5
+    POP.W   R4
+    ENDM
+    
+; load state
+LOAD_STATE      MACRO
+    MOV.W @SPTR+, S0L       // load lo-word of S[0]
+    MOV.W @SPTR+, S0H       // load hi-word of S[0]
+    MOV.W @SPTR+, S1L       // load lo-word of S[1]
+    MOV.W @SPTR+, S1H       // load hi-word of S[1]
+    MOV.W @SPTR+, S2L       // load lo-word of S[2]
+    MOV.W @SPTR+, S2H       // load hi-word of S[2]
+    MOV.W @SPTR+, S3L       // load lo-word of S[3]
+    MOV.W @SPTR+, S3H       // load hi-word of S[3]
+    SUB.W #16, SPTR
+    ENDM
+    
+SAVE_STATE      MACRO
+    MOV.W S0L, 0(SPTR)
+    MOV.W S0H, 2(SPTR)
+    MOV.W S1L, 4(SPTR)
+    MOV.W S1H, 6(SPTR)
+    MOV.W S2L, 8(SPTR)
+    MOV.W S2H, 10(SPTR)
+    MOV.W S3L, 12(SPTR)
+    MOV.W S3H, 14(SPTR)
+    ENDM
+;---------------------------------- SUBCELLS -----------------------------------
+
+SUBCELLS MACRO
+  ; S[1] ^= S[0] & S[2]
+  MOV.W S2H, THI
+  MOV.W S2L, TLO
+  AND.W S0H, THI
+  AND.W S0L, TLO
+  XOR.W THI, S1H
+  XOR.W TLO, S1L
+  
+  ; S[0] ^= S[1] & S[3];
+  MOV.W S3H, THI
+  MOV.W S3L, TLO
+  AND.W S1H, THI
+  AND.W S1L, TLO
+  XOR.W THI, S0H
+  XOR.W TLO, S0L
+  
+  ; S[2] ^= S[0] | S[1];
+  MOV.W S1H, THI
+  MOV.W S1L, TLO
+  BIS.W S0H, THI
+  BIS.W S0L, TLO
+  XOR.W THI, S2H
+  XOR.W TLO, S2L
+  
+  ; S[3] ^= S[2]
+  XOR.W S2L, S3L
+  XOR.W S2H, S3H
+  
+  ; S[1] ^= S[3]
+  XOR.W S3L, S1L
+  XOR.W S3H, S1H
+  
+  ; S[3] ^= 0xffffffff
+  XOR.W #0xffff, S3L
+  XOR.W #0xffff, S3H
+  
+  ; S[2] ^= S[0] & S[1]
+  MOV.W S1H, THI
+  MOV.W S1L, TLO
+  AND.W S0H, THI
+  AND.W S0L, TLO
+  XOR.W THI, S2H
+  XOR.W TLO, S2L
+  
+  ; S[0] SWAP S[3]
+  MOV.W S0H, THI
+  MOV.W S0L, TLO
+  MOV.W S3H, S0H
+  MOV.W S3L, S0L
+  MOV.W THI, S3H
+  MOV.W TLO, S3L
+  
+  ENDM
+
+;---------------------------------- PermBits -----------------------------------
+
+MVBIT   MACRO   SR, DR, SP, DP
+  BIT.W SP, SR
+  SUBC.W Rmask, Rmask
+  MOV DP, Rtemp
+  BIC.W Rmask, Rtemp
+  BIS Rtemp, DR
+  ENDM
+  
+S0MOD   MACRO
+  CLR.W TLO
+  CLR.W THI
+  CLR.W Rmask
+  CLR.W Rtemp
+  ; S0, b = 0
+  MVBIT S0L, TLO, #0x1, #0x1
+  MVBIT S0L, THI, #0x2, #0x100          ; (24-16 = 8 -> 2^8 = 256 = 0x100)
+  MVBIT S0L, THI, #0x4, #0x1
+  MVBIT S0L, TLO, #0x8, #0x100
+  ; S0, b = 1
+  MVBIT S0L, TLO, #0x10, #0x2
+  MVBIT S0L, THI, #0x20, #0x200         ; (25 - 16 = 9 -> 2^9 = 512 = 0x200)
+  MVBIT S0L, THI, #0x40, #0x2
+  MVBIT S0L, TLO, #0x80, #0x200
+  ; S0, b = 2
+  MVBIT S0L, TLO, #0x100, #0x4
+  MVBIT S0L, THI, #0x200, #0x400         
+  MVBIT S0L, THI, #0x400, #0x4
+  MVBIT S0L, TLO, #0x800, #0x400
+  ; S0, b = 3
+  MVBIT S0L, TLO, #0x1000, #0x8
+  MVBIT S0L, THI, #0x2000, #0x800         
+  MVBIT S0L, THI, #0x4000, #0x8
+  MVBIT S0L, TLO, #0x8000, #0x800
+  ; S0, b = 4
+  MVBIT S0H, TLO, #0x1, #0x10
+  MVBIT S0H, THI, #0x2, #0x1000         
+  MVBIT S0H, THI, #0x4, #0x10
+  MVBIT S0H, TLO, #0x8, #0x1000
+  ; S0, b = 5
+  MVBIT S0H, TLO, #0x10, #0x20
+  MVBIT S0H, THI, #0x20, #0x2000         
+  MVBIT S0H, THI, #0x40, #0x20
+  MVBIT S0H, TLO, #0x80, #0x2000
+  ; S0, b = 6
+  MVBIT S0H, TLO, #0x100, #0x40
+  MVBIT S0H, THI, #0x200, #0x4000         
+  MVBIT S0H, THI, #0x400, #0x40
+  MVBIT S0H, TLO, #0x800, #0x4000
+  ; S0, b = 7
+  MVBIT S0H, TLO, #0x1000, #0x80
+  MVBIT S0H, THI, #0x2000, #0x8000         
+  MVBIT S0H, THI, #0x4000, #0x80
+  MVBIT S0H, TLO, #0x8000, #0x8000
+  ; S[0] = T
+  MOV.W THI, S0H
+  MOV.W TLO, S0L
+  ENDM
+  
+S1MOD   MACRO
+  CLR.W TLO
+  CLR.W THI
+  CLR.W Rmask
+  CLR.W Rtemp
+  ; S1, b = 0
+  MVBIT S1L, TLO, #0x1, #0x100
+  MVBIT S1L, TLO, #0x2, #0x1          
+  MVBIT S1L, THI, #0x4, #0x100
+  MVBIT S1L, THI, #0x8, #0x1
+  ; S1, b = 1
+  MVBIT S1L, TLO, #0x10, #0x200
+  MVBIT S1L, TLO, #0x20, #0x2         
+  MVBIT S1L, THI, #0x40, #0x200
+  MVBIT S1L, THI, #0x80, #0x2
+  ; S1, b = 2
+  MVBIT S1L, TLO, #0x100, #0x400
+  MVBIT S1L, TLO, #0x200, #0x4         
+  MVBIT S1L, THI, #0x400, #0x400
+  MVBIT S1L, THI, #0x800, #0x4
+  ; S1, b = 3
+  MVBIT S1L, TLO, #0x1000, #0x800
+  MVBIT S1L, TLO, #0x2000, #0x8         
+  MVBIT S1L, THI, #0x4000, #0x800
+  MVBIT S1L, THI, #0x8000, #0x8
+  ; S1, b = 4
+  MVBIT S1H, TLO, #0x1, #0x1000
+  MVBIT S1H, TLO, #0x2, #0x10         
+  MVBIT S1H, THI, #0x4, #0x1000
+  MVBIT S1H, THI, #0x8, #0x10
+  ; S1, b = 5
+  MVBIT S1H, TLO, #0x10, #0x2000
+  MVBIT S1H, TLO, #0x20, #0x20         
+  MVBIT S1H, THI, #0x40, #0x2000
+  MVBIT S1H, THI, #0x80, #0x20
+  ; S1, b = 6
+  MVBIT S1H, TLO, #0x100, #0x4000
+  MVBIT S1H, TLO, #0x200, #0x40         
+  MVBIT S1H, THI, #0x400, #0x4000
+  MVBIT S1H, THI, #0x800, #0x40
+  ; S1, b = 7
+  MVBIT S1H, TLO, #0x1000, #0x8000
+  MVBIT S1H, TLO, #0x2000, #0x80         
+  MVBIT S1H, THI, #0x4000, #0x8000
+  MVBIT S1H, THI, #0x8000, #0x80
+  ; S[1] = T
+  MOV.W THI, S1H
+  MOV.W TLO, S1L
+  ENDM
+  
+S2MOD   MACRO
+  CLR.W TLO
+  CLR.W THI
+  CLR.W Rmask
+  CLR.W Rtemp
+  ; S2, b = 0
+  MVBIT S2L, THI, #0x1, #0x1
+  MVBIT S2L, TLO, #0x2, #0x100          
+  MVBIT S2L, TLO, #0x4, #0x1
+  MVBIT S2L, THI, #0x8, #0x100
+  ; S2, b = 1
+  MVBIT S2L, THI, #0x10, #0x2
+  MVBIT S2L, TLO, #0x20, #0x200         
+  MVBIT S2L, TLO, #0x40, #0x2
+  MVBIT S2L, THI, #0x80, #0x200
+  ; S2, b = 2
+  MVBIT S2L, THI, #0x100, #0x4
+  MVBIT S2L, TLO, #0x200, #0x400         
+  MVBIT S2L, TLO, #0x400, #0x4
+  MVBIT S2L, THI, #0x800, #0x400
+  ; S2, b = 3
+  MVBIT S2L, THI, #0x1000, #0x8
+  MVBIT S2L, TLO, #0x2000, #0x800         
+  MVBIT S2L, TLO, #0x4000, #0x8
+  MVBIT S2L, THI, #0x8000, #0x800
+  ; S2, b = 4
+  MVBIT S2H, THI, #0x1, #0x10
+  MVBIT S2H, TLO, #0x2, #0x1000         
+  MVBIT S2H, TLO, #0x4, #0x10
+  MVBIT S2H, THI, #0x8, #0x1000
+  ; S2, b = 5
+  MVBIT S2H, THI, #0x10, #0x20
+  MVBIT S2H, TLO, #0x20, #0x2000         
+  MVBIT S2H, TLO, #0x40, #0x20
+  MVBIT S2H, THI, #0x80, #0x2000
+  ; S2, b = 6
+  MVBIT S2H, THI, #0x100, #0x40
+  MVBIT S2H, TLO, #0x200, #0x4000         
+  MVBIT S2H, TLO, #0x400, #0x40
+  MVBIT S2H, THI, #0x800, #0x4000
+  ; S2, b = 7
+  MVBIT S2H, THI, #0x1000, #0x80
+  MVBIT S2H, TLO, #0x2000, #0x8000         
+  MVBIT S2H, TLO, #0x4000, #0x80
+  MVBIT S2H, THI, #0x8000, #0x8000
+  ; S[2] = T
+  MOV.W THI, S2H
+  MOV.W TLO, S2L
+  ENDM
+  
+S3MOD   MACRO
+  CLR.W TLO
+  CLR.W THI
+  CLR.W Rmask
+  CLR.W Rtemp
+  ; S3, b = 0
+  MVBIT S3L, THI, #0x1, #0x100
+  MVBIT S3L, THI, #0x2, #0x1          
+  MVBIT S3L, TLO, #0x4, #0x100
+  MVBIT S3L, TLO, #0x8, #0x1
+  ; S3, b = 1
+  MVBIT S3L, THI, #0x10, #0x200
+  MVBIT S3L, THI, #0x20, #0x2         
+  MVBIT S3L, TLO, #0x40, #0x200
+  MVBIT S3L, TLO, #0x80, #0x2
+  ; S3, b = 2
+  MVBIT S3L, THI, #0x100, #0x400
+  MVBIT S3L, THI, #0x200, #0x4         
+  MVBIT S3L, TLO, #0x400, #0x400
+  MVBIT S3L, TLO, #0x800, #0x4
+  ; S3, b = 3
+  MVBIT S3L, THI, #0x1000, #0x800
+  MVBIT S3L, THI, #0x2000, #0x8         
+  MVBIT S3L, TLO, #0x4000, #0x800
+  MVBIT S3L, TLO, #0x8000, #0x8
+  ; S3, b = 4
+  MVBIT S3H, THI, #0x1, #0x1000
+  MVBIT S3H, THI, #0x2, #0x10         
+  MVBIT S3H, TLO, #0x4, #0x1000
+  MVBIT S3H, TLO, #0x8, #0x10
+  ; S3, b = 5
+  MVBIT S3H, THI, #0x10, #0x2000
+  MVBIT S3H, THI, #0x20, #0x20         
+  MVBIT S3H, TLO, #0x40, #0x2000
+  MVBIT S3H, TLO, #0x80, #0x20
+  ; S3, b = 6
+  MVBIT S3H, THI, #0x100, #0x4000
+  MVBIT S3H, THI, #0x200, #0x40         
+  MVBIT S3H, TLO, #0x400, #0x4000
+  MVBIT S3H, TLO, #0x800, #0x40
+  ; S3, b = 7
+  MVBIT S3H, THI, #0x1000, #0x8000
+  MVBIT S3H, THI, #0x2000, #0x80         
+  MVBIT S3H, TLO, #0x4000, #0x8000
+  MVBIT S3H, TLO, #0x8000, #0x80
+  ; S[3] = T
+  MOV.W THI, S3H
+  MOV.W TLO, S3L
+  ENDM 
+  
+PERMBITS        MACRO
+  S0MOD
+  S1MOD
+  S2MOD
+  S3MOD
+  ENDM
+
+;------------------------------ AddRoundConstant -------------------------------
+
+ADDRCON MACRO   NR
+  MOV.W #40, INDEX
+  SUB.W NR, INDEX
+  MOV.W #RCON, CPTR
+  ADD.W INDEX, CPTR
+  ADD.W INDEX, CPTR
+  XOR.W @CPTR, S3L
+  XOR.W #0x8000, S3H
+  ENDM
+
+;-------------------------------- AddRoundKey ----------------------------------
+
+LDW23   MACRO
+  ADD.W #4, RKPTR               ; point to W[2]
+  MOV.W @RKPTR+, W2
+  MOV.W @RKPTR+, W3
+  ENDM
+  
+LDW67   MACRO
+  ADD.W #4, RKPTR               ; point to W[6]
+  MOV.W @RKPTR+, W6
+  MOV.W @RKPTR+, W7
+  ENDM
+  
+ADDROUNDKEY     MACRO   OFFSET
+  LDW23
+  XOR.W W2, S2H
+  XOR.W W3, S2L
+  LDW67
+  XOR.W W6, S1H
+  XOR.W W7, S1L
+  ENDM
+    
+;-------------------------------- Directives -----------------------------------
+
+NAME gift128_perm_msp
+PUBLIC gift128_perm_msp
+RSEG CODE
+
+;--------------------------------- MAIN LOOP -----------------------------------
+
+
+gift128_perm_msp:
+    PROLOGUE
+    
+    MOV.W #40, NR
+    LOAD_STATE
+    PUSH.W SPTR
+    loop:
+      PUSH.W RKPTR
+      PUSH.W NR
+      SUBCELLS
+      PERMBITS
+      POP.W NR
+      POP.W RKPTR
+      ADDRCON   NR
+      ADDROUNDKEY
+      SUB.W #1, NR
+      JZ term
+      BR #loop
+    
+    term:
+    POP.W SPTR
+    SAVE_STATE
+    EPILOGUE
+    RET
+
+RSEG DATA16_C:DATA:REORDER:NOROOT(1)
+
+RCON:
+    DC16 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003E, 0x003D, 0x003B, 0x0037, 0x002F
+    DC16 0x001E, 0x003C, 0x0039, 0x0033, 0x0027, 0x000E, 0x001D, 0x003A, 0x0035, 0x002B
+    DC16 0x0016, 0x002C, 0x0018, 0x0030, 0x0021, 0x0002, 0x0005, 0x000B, 0x0017, 0x002E
+    DC16 0x001C, 0x0038, 0x0031, 0x0023, 0x0006, 0x000D, 0x001B, 0x0036, 0x002D, 0x001A
+END

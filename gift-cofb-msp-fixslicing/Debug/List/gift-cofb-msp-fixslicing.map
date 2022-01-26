@@ -1,0 +1,1320 @@
+Warning[w6]: Type conflict for external/entry "memset", in module main against external/entry in module ?memset; prototyped function vs K&R function
+  /* In module main: */
+  /* K&R Function, args 0, attr 0 */
+  int (__cc_version2 memset)();
+  /* In module ?memset: */
+  /* Function, args 3, attr 0 */
+  void * (__cc_version2 memset)(void *,
+                                int,
+                                size_t);
+    typedef _Sizet size_t;
+    typedef unsigned int _Sizet;
+################################################################################
+#                                                                              #
+#      IAR Universal Linker V6.6.2.104                                         #
+#                                                                              #
+#           Link time     =  30/Sep/2021  20:45:00                             #
+#           Target CPU    =  MSP430                                            #
+#           List file     =  C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\List\gift-cofb-msp-fixslicing.map            #
+#           Output file 1 =  C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\Exe\gift-cofb-msp-fixslicing.d43             #
+#                            Format: ubrof10                                   #
+#                            UBROF version 10.0.6                              #
+#                            Using library modules for C-SPY (-rt)             #
+#           Command line  =  -f C:\Users\alexb\AppData\Local\Temp\EW5B1.tmp    #
+#                            (C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\ #
+#                            Debug\Obj\gift128_perm_msp_fixslicing.r43         #
+#                            C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\Obj\main.r43                                 #
+#                            C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\Obj\precompute_rkeys_msp.r43                 #
+#                            -o                                                #
+#                            C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\Exe\gift-cofb-msp-fixslicing.d43             #
+#                            -l                                                #
+#                            C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\D #
+#                            ebug\List\gift-cofb-msp-fixslicing.map            #
+#                            -xms                                              #
+#                            "-IC:\Program Files (x86)\IAR Systems\Embedded Wo #
+#                            rkbench 8.5\430\LIB\\"                            #
+#                            -f                                                #
+#                            "C:\Program Files (x86)\IAR Systems\Embedded Work #
+#                            bench 8.5\430\config\linker\lnk430f1611.xcl"      #
+#                            (-cmsp430 -U1100-18FF=0200-09FF                   #
+#                            -QCODE_I=CODE_ID -QTLS16_I=TLS16_ID               #
+#                            -D__iar_HWMUL=130 -Z(CONST)INFO=1000-10FF         #
+#                            -Z(CONST)INFOA=1080-10FF                          #
+#                            -Z(CONST)INFOB=1000-107F                          #
+#                            -Z(DATA)DATA16_I,DATA16_Z,DATA16_N,TLS16_I=1100-3 #
+#                            8FF                                               #
+#                            -Z(DATA)DATA16_HEAP+_DATA16_HEAP_SIZE             #
+#                            -Z(DATA)CODE_I -Z(DATA)CSTACK+_STACK_SIZE#        #
+#                            -Z(CONST)DATA16_C,DATA16_ID,TLS16_ID,DIFUNCT,CHEC #
+#                            KSUM=4000-FFDF                                    #
+#                            -Z(CODE)CSTART,ISR_CODE,CODE_ID=4000-FFDF         #
+#                            -P(CODE)CODE=4000-FFDF -Z(CODE)INTVEC=FFE0-FFFF   #
+#                            -Z(CODE)RESET=FFFE-FFFF) -f                       #
+#                            "C:\Program Files (x86)\IAR Systems\Embedded Work #
+#                            bench 8.5\430\config\linker\multiplier.xcl"       #
+#                            (-e?Mul8Hw=?Mul8 -e?Mul16Hw=?Mul16                #
+#                            -e?Mul16to32uHw=?Mul16to32u                       #
+#                            -e?Mul16to32sHw=?Mul16to32s -e?Mul32Hw=?Mul32     #
+#                            -e_Mul64iHw=_Mul64i                               #
+#                            -e_Mul32u32uto64iHw=_Mul32u32uto64i               #
+#                            -e?Mul32fHw=_Mul32f -e_Mul64fHwPtr=_Mul64fPtr)    #
+#                            -D_STACK_SIZE=50 -rt                              #
+#                            "C:\Program Files (x86)\IAR Systems\Embedded Work #
+#                            bench 8.5\430\lib\dlib\dl430fn.r43"               #
+#                            -D_DATA16_HEAP_SIZE=50 -s __program_start         #
+#                            -D_DATA20_HEAP_SIZE=50)                           #
+#                                                                              #
+#                           Copyright (C) 1987-2019 IAR Systems AB.            #
+################################################################################
+
+
+
+
+
+                ****************************************
+                *                                      *
+                *           CROSS REFERENCE            *
+                *                                      *
+                ****************************************
+
+       Program entry at :           4294  Relocatable, from module : ?cstart
+
+
+
+
+                ****************************************
+                *                                      *
+                *            RUNTIME MODEL             *
+                *                                      *
+                ****************************************
+
+  __Heap_Handler             = Basic
+  __SystemLibrary            = DLib
+  __core                     = 430
+  __dlib_file_descriptor     = 0
+  __dlib_full_locale_support = 0
+  __double_size              = 32
+  __pic                      = no
+  __reg_r4                   = free
+  __reg_r5                   = free
+  __rt_version               = 3
+
+                ****************************************
+                *                                      *
+                *    AUTOMATIC SYMBOL REDIRECTIONS     *
+                *                                      *
+                ****************************************
+
+       All references to: _Printf
+         were redirected to: _PrintfSmallNoMb
+
+
+
+                ****************************************
+                *                                      *
+                *              MODULE MAP              *
+                *                                      *
+                ****************************************
+
+
+  DEFINED ABSOLUTE ENTRIES
+    *************************************************************************
+
+  DEFINED ABSOLUTE ENTRIES
+  PROGRAM MODULE, NAME : ?ABS_ENTRY_MOD
+
+Absolute parts
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _DATA20_HEAP_SIZE       0050 
+           _DATA16_HEAP_SIZE       0050 
+           _STACK_SIZE             0050 
+           __iar_HWMUL             0130            Segment part 1 (?Mul8Hw)
+    *************************************************************************
+
+  FILE NAME : C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\Debug\Obj\gift128_perm_msp_fixslicing.r43
+  PROGRAM MODULE, NAME : gift128_perm_msp_fixslicing
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 529E - 56EF (0x452 bytes), align: 1
+  Segment part 0. ROOT 
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           gift128_perm_msp_fixslicing
+                                   529E            test_state_update (main)
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           loop                    52C8 
+           term                    56BC 
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 4000 - 409F (0xa0 bytes), align: 1
+  Segment part 1.             Intra module refs:   gift128_perm_msp_fixslicing
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           RCON                    4000 
+
+    *************************************************************************
+
+  FILE NAME : C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\Debug\Obj\main.r43
+  PROGRAM MODULE, NAME : main
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_C
+  Relative segment, address: 4160 - 4161 (0x2 bytes), align: 0
+  Segment part 2.             Intra module refs:   test_keyschedule
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 4162 - 4189 (0x28 bytes), align: 0
+  Segment part 4.             Intra module refs:   print_state
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 40A0 - 40AF (0x10 bytes), align: 1
+  Segment part 5.             Intra module refs:   test_state_update
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 418A - 41BE (0x35 bytes), align: 0
+  Segment part 6.             Intra module refs:   test_state_update
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 41BF - 41EC (0x2e bytes), align: 0
+  Segment part 7.             Intra module refs:   test_state_update
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 41ED - 421C (0x30 bytes), align: 0
+  Segment part 8.             Intra module refs:   test_state_update
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 40B0 - 40BF (0x10 bytes), align: 1
+  Segment part 9.             Intra module refs:   test_keyschedule
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 421D - 424B (0x2f bytes), align: 0
+  Segment part 11.            Intra module refs:   test_keyschedule
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 424C - 4258 (0xd bytes), align: 0
+  Segment part 12.            Intra module refs:   test_keyschedule
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 4259 - 428C (0x34 bytes), align: 0
+  Segment part 13.            Intra module refs:   test_keyschedule
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 40C0 - 415F (0xa0 bytes), align: 1
+  Segment part 14.            Intra module refs:   test_state_update
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           rconst                  40C0 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 4C18 - 529D (0x686 bytes), align: 1
+  Segment part 15.            Intra module refs:   test_keyschedule
+                                                   test_state_update
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           precompute_rkeys        4C18 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6688 - 6691 (0xa bytes), align: 1
+  Segment part 16.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine39           6688 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66A6 - 66AF (0xa bytes), align: 1
+  Segment part 17.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine38           66A6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66C4 - 66CD (0xa bytes), align: 1
+  Segment part 18.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine35           66C4 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 669C - 66A5 (0xa bytes), align: 1
+  Segment part 19.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine34           669C 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66BA - 66C3 (0xa bytes), align: 1
+  Segment part 20.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine33           66BA 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6692 - 669B (0xa bytes), align: 1
+  Segment part 21.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine32           6692 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 667E - 6687 (0xa bytes), align: 1
+  Segment part 22.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine31           667E 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E36 - 5E3F (0xa bytes), align: 1
+  Segment part 23.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine30           5E36 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E40 - 5E47 (0x8 bytes), align: 1
+  Segment part 24.            Intra module refs:   ?Subroutine30
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine76           5E40 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E48 - 5E51 (0xa bytes), align: 1
+  Segment part 25.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine29           5E48 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E52 - 5E5B (0xa bytes), align: 1
+  Segment part 26.            Intra module refs:   ?Subroutine29
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine74           5E52 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E5C - 5E5F (0x4 bytes), align: 1
+  Segment part 27.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine28           5E5C 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E60 - 5E69 (0xa bytes), align: 1
+  Segment part 28.            Intra module refs:   ?Subroutine28
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine75           5E60 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E6A - 5E77 (0xe bytes), align: 1
+  Segment part 29.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine27           5E6A 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E78 - 5E7F (0x8 bytes), align: 1
+  Segment part 30.            Intra module refs:   ?Subroutine27
+                                                   ?Subroutine29
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine65           5E78 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E80 - 5E87 (0x8 bytes), align: 1
+  Segment part 31.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine26           5E80 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E88 - 5E97 (0x10 bytes), align: 1
+  Segment part 32.            Intra module refs:   ?Subroutine26
+                                                   ?Subroutine28
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine64           5E88 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5E98 - 5E9F (0x8 bytes), align: 1
+  Segment part 33.            Intra module refs:   ?Subroutine25
+                                                   ?Subroutine30
+                                                   ?Subroutine64
+                                                   ?Subroutine65
+                                                   ?Subroutine66
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine72           5E98 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EA0 - 5EAD (0xe bytes), align: 1
+  Segment part 34.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine25           5EA0 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EAE - 5EB7 (0xa bytes), align: 1
+  Segment part 35.            Intra module refs:   ?Subroutine25
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine69           5EAE 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EB8 - 5EBB (0x4 bytes), align: 1
+  Segment part 36.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine24           5EB8 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EBC - 5EC1 (0x6 bytes), align: 1
+  Segment part 37.            Intra module refs:   ?Subroutine24
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine77           5EBC 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EC2 - 5ECF (0xe bytes), align: 1
+  Segment part 38.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine23           5EC2 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5ED0 - 5EDB (0xc bytes), align: 1
+  Segment part 39.            Intra module refs:   ?Subroutine23
+                                                   ?Subroutine24
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine66           5ED0 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EDC - 5EEB (0x10 bytes), align: 1
+  Segment part 40.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine22           5EDC 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EEC - 5EED (0x2 bytes), align: 1
+  Segment part 41.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine19           5EEC 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EEE - 5EF5 (0x8 bytes), align: 1
+  Segment part 42.            Intra module refs:   ?Subroutine19
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5EF6 - 5F15 (0x20 bytes), align: 1
+  Segment part 43.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine1            5EF6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F16 - 5F1D (0x8 bytes), align: 1
+  Segment part 45.            Intra module refs:   ?Subroutine1
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine63           5F16 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F1E - 5F25 (0x8 bytes), align: 1
+  Segment part 46.            Intra module refs:   ?Subroutine1
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine61           5F1E 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F26 - 5F33 (0xe bytes), align: 1
+  Segment part 49.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine42           5F26 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F34 - 5F41 (0xe bytes), align: 1
+  Segment part 53.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine20           5F34 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F42 - 5F49 (0x8 bytes), align: 1
+  Segment part 54.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine17           5F42 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F4A - 5F51 (0x8 bytes), align: 1
+  Segment part 55.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine15           5F4A 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F52 - 5F5B (0xa bytes), align: 1
+  Segment part 56.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine10           5F52 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F5C - 5F87 (0x2c bytes), align: 1
+  Segment part 58.            Intra module refs:   test_state_update
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           print_state             5F5C 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F88 - 5F95 (0xe bytes), align: 1
+  Segment part 67.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine21           5F88 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5F96 - 5FB1 (0x1c bytes), align: 1
+  Segment part 69.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine13           5F96 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5FB2 - 5FBB (0xa bytes), align: 1
+  Segment part 74.            Intra module refs:   ?Subroutine27
+                                                   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine67           5FB2 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5FBC - 5FC3 (0x8 bytes), align: 1
+  Segment part 76.            Intra module refs:   precompute_rkeys
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine71           5FBC 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5FC4 - 5FCD (0xa bytes), align: 1
+  Segment part 78.            Intra module refs:   ?Subroutine26
+                                                   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine68           5FC4 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5FCE - 5FD5 (0x8 bytes), align: 1
+  Segment part 95.            Intra module refs:   precompute_rkeys
+                                                   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine18           5FCE 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66D6 - 66DD (0x8 bytes), align: 1
+  Segment part 96.            Intra module refs:   precompute_rkeys
+                                                   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine16           66D6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65C6 - 65D5 (0x10 bytes), align: 1
+  Segment part 94.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine36           65C6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65F6 - 6605 (0x10 bytes), align: 1
+  Segment part 97.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine12           65F6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6614 - 6621 (0xe bytes), align: 1
+  Segment part 98.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine11           6614 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5A9C - 5E35 (0x39a bytes), align: 1
+  Segment part 84.            Intra module refs:   main
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           test_state_update       5A9C 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 656C - 657D (0x12 bytes), align: 1
+  Segment part 85.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine57           656C 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 664C - 6659 (0xe bytes), align: 1
+  Segment part 86.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine56           664C 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6630 - 663D (0xe bytes), align: 1
+  Segment part 87.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine55           6630 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6506 - 651B (0x16 bytes), align: 1
+  Segment part 88.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine54           6506 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 651C - 6531 (0x16 bytes), align: 1
+  Segment part 89.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine53           651C 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 64F0 - 6505 (0x16 bytes), align: 1
+  Segment part 90.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine52           64F0 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 62AA - 6303 (0x5a bytes), align: 1
+  Segment part 91.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine49           62AA 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 61D6 - 6243 (0x6e bytes), align: 1
+  Segment part 92.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine37           61D6 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 655A - 656B (0x12 bytes), align: 1
+  Segment part 93.            Intra module refs:   ?Subroutine37
+                                                   ?Subroutine49
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine70           655A 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66B0 - 66B9 (0xa bytes), align: 1
+  Segment part 99.            Intra module refs:   test_state_update
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ?Subroutine2            66B0 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6126 - 61D5 (0xb0 bytes), align: 1
+  Segment part 100.           Intra module refs:   main
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           test_keyschedule        6126 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 665A - 6665 (0xc bytes), align: 1
+  Segment part 101.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           main                    665A            Segment part 19 (?cstart)
+               calls direct
+
+    *************************************************************************
+
+  FILE NAME : C:\Users\alexb\Desktop\gift-cofb-msp-fixslicing\Debug\Obj\precompute_rkeys_msp.r43
+  PROGRAM MODULE, NAME : precompute_rkeys_msp
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 42A0 - 4C17 (0x978 bytes), align: 1
+  Segment part 0. ROOT 
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           precompute_rkeys_msp    42A0            test_keyschedule (main)
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           loop                    4300 
+           term                    436A 
+           transposition_loop      436E 
+           transpoition_term       4C04 
+
+    *************************************************************************
+
+  FILE NAME : C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.5\430\lib\dlib\dl430fn.r43
+  LIBRARY MODULE, NAME : ?__dbg_break
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 66E6 - 66E7 (0x2 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __DebugBreak            66E6            __dwrite (?__dwrite)
+                                                   __exit (?__exit)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__dwrite
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6462 - 6481 (0x20 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __dwrite                6462            __write (?__write)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 65B4 - 65C5 (0x12 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __exit                  65B4            Segment part 6 (?_exit)
+                                                   _exit (?_exit)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__write
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6666 - 6671 (0xc bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __write                 6666            putchar (?putchar)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?_exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 66DE, align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _exit                   66DE            exit (?exit)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 66DE - 66E1 (0x4 bytes), align: 1
+  Segment part 6.             Intra module refs:   _exit
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?cstart
+
+  SEGMENTS IN THE MODULE
+  ======================
+CSTACK
+  Relative segment, address: 38B0, align: 1
+  Segment part 1.
+    -------------------------------------------------------------------------
+CSTART
+  Relative segment, address: 4294 - 4297 (0x4 bytes), align: 1
+  Segment part 9.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __program_start         4294            ?reset_vector (?reset_vector)
+                                                   Absolute parts (?ABS_ENTRY_MOD)
+           ?cstart_begin           4294 
+    -------------------------------------------------------------------------
+CSTART
+  Relative segment, address: 4298 - 429F (0x8 bytes), align: 1
+  Segment part 19.            Intra module refs:   Segment part 9
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_call_main       4298 
+           ?cstart_end             42A0 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?reset_vector
+
+  SEGMENTS IN THE MODULE
+  ======================
+RESET
+  Relative segment, address: FFFE - FFFF (0x2 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?reset_vector           FFFE            Segment part 9 (?cstart)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?Epilogue
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 65A2 - 65A3 (0x2 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue8              65A2            precompute_rkeys (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65A4 - 65A5 (0x2 bytes), align: 1
+  Segment part 1.             Intra module refs:   ?Epilogue8
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue7              65A4 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65A6 - 65A7 (0x2 bytes), align: 1
+  Segment part 2.             Intra module refs:   ?Epilogue7
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue6              65A6            _LitobSmallNoMb (?xprintfsmall_nomb)
+                                                   _PrintfSmallNoMb (?xprintfsmall_nomb)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65A8 - 65A9 (0x2 bytes), align: 1
+  Segment part 3.             Intra module refs:   ?Epilogue6
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue5              65A8 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65AA - 65AB (0x2 bytes), align: 1
+  Segment part 4.             Intra module refs:   ?Epilogue5
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue4              65AA            _PutcharsSmallNoMb (?xprintfsmall_nomb)
+                                                   pad (?xprintfsmall_nomb)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 65AC - 65B3 (0x8 bytes), align: 1
+  Segment part 5.             Intra module refs:   ?Epilogue4
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue3              65AC            test_keyschedule (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 66E2 - 66E5 (0x4 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           exit                    66E2            Segment part 19 (?cstart)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?DivMod32u
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6304 - 633B (0x38 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?DivMod32u              6304            _LitobSmallNoMb (?xprintfsmall_nomb)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftLeft16_n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 66CE - 66D5 (0x8 bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft16_3          66CE            precompute_rkeys (main)
+                                                   test_state_update (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftLeft32_n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 64D6 - 64D9 (0x4 bytes), align: 1
+  Segment part 1.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_6          64D6            ?Subroutine36 (main)
+                                                   precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 64DA - 64DD (0x4 bytes), align: 1
+  Segment part 2.             Intra module refs:   ?ShiftLeft32_6
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_5          64DA 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 64DE - 64E1 (0x4 bytes), align: 1
+  Segment part 3.             Intra module refs:   ?ShiftLeft32_5
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_4          64DE            ?Subroutine13 (main)
+                                                   ?Subroutine18 (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 64E2 - 64EF (0xe bytes), align: 1
+  Segment part 4.             Intra module refs:   ?ShiftLeft32_4
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_3          64E2            ?Subroutine16 (main)
+                                                   precompute_rkeys (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftLeft32_8n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 643E - 6441 (0x4 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_14         643E            ?Subroutine21 (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6442 - 6445 (0x4 bytes), align: 1
+  Segment part 1.             Intra module refs:   ?ShiftLeft32_14
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_13         6442 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6446 - 6449 (0x4 bytes), align: 1
+  Segment part 2.             Intra module refs:   ?ShiftLeft32_13
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_12         6446            ?Subroutine17 (main)
+                                                   precompute_rkeys (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 644A - 644D (0x4 bytes), align: 1
+  Segment part 3.             Intra module refs:   ?ShiftLeft32_12
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_11         644A 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 644E - 6451 (0x4 bytes), align: 1
+  Segment part 4.             Intra module refs:   ?ShiftLeft32_11
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_10         644E            precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6452 - 6455 (0x4 bytes), align: 1
+  Segment part 5.             Intra module refs:   ?ShiftLeft32_10
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_9          6452            precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6456 - 6461 (0xc bytes), align: 1
+  Segment part 6.             Intra module refs:   ?ShiftLeft32_9
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftLeft32_8          6456            ?Subroutine11 (main)
+                                                   ?Subroutine12 (main)
+                                                   ?Subroutine61 (main)
+                                                   precompute_rkeys (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftRight16u_n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6606 - 6609 (0x4 bytes), align: 1
+  Segment part 3.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight16u_4        6606            ?Subroutine13 (main)
+                                                   precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 660A - 6613 (0xa bytes), align: 1
+  Segment part 4.             Intra module refs:   ?ShiftRight16u_4
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight16u_3        660A 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftRight32u_n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 63F6 - 63FB (0x6 bytes), align: 1
+  Segment part 1.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_6        63F6            ?Subroutine15 (main)
+                                                   ?Subroutine65 (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 63FC - 6401 (0x6 bytes), align: 1
+  Segment part 2.             Intra module refs:   ?ShiftRight32u_6
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_5        63FC            precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6402 - 6407 (0x6 bytes), align: 1
+  Segment part 3.             Intra module refs:   ?ShiftRight32u_5
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_4        6402            Segment part 42 (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6408 - 640D (0x6 bytes), align: 1
+  Segment part 4.             Intra module refs:   ?ShiftRight32u_4
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_3        6408            ?Subroutine64 (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 640E - 6419 (0xc bytes), align: 1
+  Segment part 5.             Intra module refs:   ?ShiftRight32u_3
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_2        640E 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ShiftRight32u_8n
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6372 - 6377 (0x6 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_14       6372            precompute_rkeys (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6378 - 637D (0x6 bytes), align: 1
+  Segment part 1.             Intra module refs:   ?ShiftRight32u_14
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_13       6378 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 637E - 6383 (0x6 bytes), align: 1
+  Segment part 2.             Intra module refs:   ?ShiftRight32u_13
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_12       637E            ?Subroutine66 (main)
+                                                   test_state_update (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6384 - 6389 (0x6 bytes), align: 1
+  Segment part 3.             Intra module refs:   ?ShiftRight32u_12
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_11       6384 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 638A - 638F (0x6 bytes), align: 1
+  Segment part 4.             Intra module refs:   ?ShiftRight32u_11
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_10       638A 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6390 - 6395 (0x6 bytes), align: 1
+  Segment part 5.             Intra module refs:   ?ShiftRight32u_10
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_9        6390            ?Subroutine25 (main)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6396 - 63A1 (0xc bytes), align: 1
+  Segment part 6.             Intra module refs:   ?ShiftRight32u_9
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ShiftRight32u_8        6396            ?Subroutine10 (main)
+                                                   ?Subroutine63 (main)
+                                                   test_state_update (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?memchr
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6546 - 6559 (0x14 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __iar_Memchr            6546            _PrintfSmallNoMb (?xprintfsmall_nomb)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?CopyMemoryWords
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 65E6 - 65F5 (0x10 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?CopyMemoryWords        65E6            test_keyschedule (main)
+                                                   test_state_update (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?ClearMemoryWords
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 65D6 - 65E5 (0x10 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?ClearMemoryWords       65D6            test_keyschedule (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?memset
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 657E - 658F (0x12 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           memset                  657E            test_keyschedule (main)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?Mul8Hw
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 649E - 64A1 (0x4 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Mul8Hw                 649E            _LitobSmallNoMb (?xprintfsmall_nomb)
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 64A2 - 64B9 (0x18 bytes), align: 1
+  Segment part 1.             Intra module refs:   ?Mul8Hw
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Mul16Hw                64A2 
+           ?Mul16to32uHw           64A2 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?printf
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6482 - 649D (0x1c bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           printf                  6482            print_state (main)
+                                                   test_keyschedule (main)
+                                                   test_state_update (main)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?putchar
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 63CE - 63F5 (0x28 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           putchar                 63CE            _Prout (?xprout)
+               calls direct
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?strchr
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6622 - 662F (0xe bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __iar_Strchr            6622            _PrintfSmallNoMb (?xprintfsmall_nomb)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?strlen
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 6590 - 65A1 (0x12 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           strlen                  6590            _PrintfSmallNoMb (?xprintfsmall_nomb)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xprintfsmall_nomb
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 56F0 - 5A9B (0x3ac bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _PrintfSmallNoMb        56F0            printf (?printf)
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6672 - 667D (0xc bytes), align: 1
+  Segment part 5.             Intra module refs:   _PrintfSmallNoMb
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6532 - 6545 (0x14 bytes), align: 1
+  Segment part 6.             Intra module refs:   _PrintfSmallNoMb
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 6244 - 62A9 (0x66 bytes), align: 1
+  Segment part 7.             Intra module refs:   _PrintfSmallNoMb
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LoadInt                 6244 
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 663E - 664B (0xe bytes), align: 1
+  Segment part 8.             Intra module refs:   LoadInt
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 633C - 6371 (0x36 bytes), align: 1
+  Segment part 9.             Intra module refs:   Segment part 5
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           pad                     633C 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 5FD6 - 6125 (0x150 bytes), align: 1
+  Segment part 3.             Intra module refs:   _PrintfSmallNoMb
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           _LitobSmallNoMb         5FD6 
+               calls direct
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 641A - 643D (0x24 bytes), align: 1
+  Segment part 10.            Intra module refs:   _PrintfSmallNoMb
+                                                   _PutcharsSmallNoMb
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           _PutcharSmallNoMb       641A 
+               calls indirect
+    -------------------------------------------------------------------------
+<CODE> 1 (was CODE)
+  Relative segment, address: 63A2 - 63CD (0x2c bytes), align: 1
+  Segment part 11.            Intra module refs:   _PrintfSmallNoMb
+                                                   pad
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           _PutcharsSmallNoMb      63A2 
+               calls direct
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 428D - 4292 (0x6 bytes), align: 0
+  Segment part 2.             Intra module refs:   _PrintfSmallNoMb
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xprout
+
+  SEGMENTS IN THE MODULE
+  ======================
+<CODE> 1 (was CODE)
+  Relative segment, address: 64BA - 64D5 (0x1c bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _Prout                  64BA            printf (?printf)
+               calls direct
+
+
+
+
+                ****************************************
+                *                                      *
+                *      SEGMENTS IN ADDRESS ORDER       *
+                *                                      *
+                ****************************************
+
+
+SEGMENT              SPACE    START ADDRESS   END ADDRESS     SIZE  TYPE  ALIGN
+=======              =====    =============   ===========     ====  ====  =====
+CSTACK                                 38B0 - 38FF              50   rel    1
+DATA16_C                               4000 - 4292             293   rel    1
+CSTART                                 4294 - 429F               C   rel    1
+<CODE> 1                               42A0 - 66E7            2448   rel    1
+RESET                                  FFFE - FFFF               2   rel    1
+
+                ****************************************
+                *                                      *
+                *        END OF CROSS REFERENCE        *
+                *                                      *
+                ****************************************
+
+ 9 302 bytes of CODE  memory
+    80 bytes of DATA  memory
+   659 bytes of CONST memory
+
+Errors: none
+Warnings: 1
+

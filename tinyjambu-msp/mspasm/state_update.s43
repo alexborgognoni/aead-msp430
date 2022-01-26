@@ -1,0 +1,299 @@
+;-------------------------------- Definitions ----------------------------------
+
+; pointer to state containing  8 16-bit words s0...s7
+#define sptr            R12
+
+; pointer to key containing 8 16-bit words k0...k7
+#define kptr            R13
+#define k               R12
+#define ctr             R14
+
+; state registers
+#define s0              R4
+#define s1              R5
+#define s2              R6
+#define s3              R7
+#define s4              R8
+#define s5              R9
+#define s6              R10
+#define s7              R11
+
+; temporary registers
+#define t1              R12
+#define t2              R15
+
+
+
+;------------------------------- MACROS ----------------------------------------
+
+; push callee-saved registers onto the stack
+PROLOGUE        MACRO
+    PUSH.W      R4
+    PUSH.W      R5
+    PUSH.W      R6
+    PUSH.W      R7
+    PUSH.W      R8
+    PUSH.W      R9
+    PUSH.W      R10
+    ENDM
+                
+; pop callee-saved registers form stack
+EPILOGUE        MACRO
+    POP.W       R10
+    POP.W       R9
+    POP.W       R8
+    POP.W       R7
+    POP.W       R6
+    POP.W       R5
+    POP.W       R4
+    ENDM
+                
+; load state into registers
+LOAD_STATE      MACRO
+    MOV.W       @sptr+, s0
+    MOV.W       @sptr+, s1
+    MOV.W       @sptr+, s2
+    MOV.W       @sptr+, s3
+    MOV.W       @sptr+, s4
+    MOV.W       @sptr+, s5
+    MOV.W       @sptr+, s6
+    MOV.W       @sptr, s7
+    SUB.W       #14, sptr  
+    ENDM
+
+; save state back to memory
+SAVE_STATE      MACRO
+    MOV.W       s7,     14(sptr)
+    MOV.W       s6,     12(sptr)
+    MOV.W       s5,     10(sptr)
+    MOV.W       s4,     8(sptr)
+    MOV.W       s3,     6(sptr)
+    MOV.W       s2,     4(sptr)
+    MOV.W       s1,     2(sptr)
+    MOV.W       s0,     0(sptr)
+    ENDM
+
+
+;------------------------------- t macros --------------------------------------
+
+; compute t1
+COMPT1 MACRO ai, bi, ro
+    MOV.W       bi, ro
+    BIT.W       #0x8000, ai
+    RLC.W       ro
+    ENDM
+    
+; compute t4
+COMPT4 MACRO ai, bi, ro
+    MOV.W       bi, ro
+    BIT.W       #0x8000, ai
+    RLC.W       ro
+    BIT.W       #0x4000, ai
+    RLC.W       ro
+    BIT.W       #0x2000, ai
+    RLC.W       ro
+    BIT.W       #0x1000, ai
+    RLC.W       ro
+    BIT.W       #0x800, ai
+    RLC.W       ro
+    ENDM
+
+; compute t2
+COMPT2 MACRO ai, bi, ro
+    MOV.W   ai, ro
+    BIT #1, bi
+    RRC ro
+    BIT #2, bi
+    RRC ro
+    BIT #4, bi
+    RRC ro
+    BIT #8, bi
+    RRC ro
+    BIT #16, bi
+    RRC ro
+    BIT #32, bi
+    RRC ro
+    ENDM
+
+; compute t3
+COMPT3 MACRO ai, bi, ro
+    MOV.W   ai, ro
+    BIT #1, bi
+    RRC ro
+    BIT #2, bi
+    RRC ro
+    BIT #4, bi
+    RRC ro
+    BIT #8, bi
+    RRC ro
+    BIT #16, bi
+    RRC ro
+    ENDM
+    
+;------------------------ state modification macros ----------------------------
+
+; compute modification for state[0]
+COMPS0 MACRO
+   
+   COMPT1 s2, s3, t1
+   COMPT4 s5, s6, t2
+   XOR.W t1, s0
+   XOR.W t2, s0
+   COMPT2 s4, s5, t1
+   COMPT3 s5, s6, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s0
+   MOV.W @kptr+, k             ; load key[0]
+   XOR.W k, s0
+   ENDM
+
+; compute modification for state[1]
+COMPS1 MACRO
+   
+   COMPT1 s3, s4, t1
+   COMPT4 s6, s7, t2
+   XOR.W t1, s1
+   XOR.W t2, s1
+   COMPT2 s5, s6, t1
+   COMPT3 s6, s7, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s1
+   MOV.W @kptr+, k             ; load key[1]
+   XOR.W k, s1
+   ENDM   
+
+; compute modification for state[2]
+COMPS2 MACRO
+   
+   COMPT1 s4, s5, t1
+   COMPT4 s7, s0, t2
+   XOR.W t1, s2
+   XOR.W t2, s2
+   COMPT2 s6, s7, t1
+   COMPT3 s7, s0, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s2
+   MOV.W @kptr+, k             ; load key[2]
+   XOR.W k, s2
+   ENDM
+
+; compute modification for state[3]
+COMPS3 MACRO
+   
+   COMPT1 s5, s6, t1
+   COMPT4 s0, s1, t2
+   XOR.W t1, s3
+   XOR.W t2, s3
+   COMPT2 s7, s0, t1
+   COMPT3 s0, s1, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s3
+   MOV.W @kptr+, k             ; load key[3]
+   XOR.W k, s3
+   ENDM
+
+; compute modification for state[4]
+COMPS4 MACRO
+   
+   COMPT1 s6, s7, t1
+   COMPT4 s1, s2, t2
+   XOR.W t1, s4
+   XOR.W t2, s4
+   COMPT2 s0, s1, t1
+   COMPT3 s1, s2, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s4
+   MOV.W @kptr+, k             ; load key[4]
+   XOR.W k, s4
+   ENDM  
+
+; compute modification for state[5]
+COMPS5 MACRO
+   
+   COMPT1 s7, s0, t1
+   COMPT4 s2, s3, t2
+   XOR.W t1, s5
+   XOR.W t2, s5
+   COMPT2 s1, s2, t1
+   COMPT3 s2, s3, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s5
+   MOV.W @kptr+, k             ; load key[5]
+   XOR.W k, s5
+   ENDM
+
+; compute modification for state[6]
+COMPS6 MACRO
+   
+   COMPT1 s0, s1, t1
+   COMPT4 s3, s4, t2
+   XOR.W t1, s6
+   XOR.W t2, s6
+   COMPT2 s2, s3, t1
+   COMPT3 s3, s4, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s6
+   MOV.W @kptr+, k             ; load key[6]
+   XOR.W k, s6
+   ENDM
+
+; compute modification for state[7]
+COMPS7 MACRO
+   
+   COMPT1 s1, s2, t1
+   COMPT4 s4, s5, t2
+   XOR.W t1, s7
+   XOR.W t2, s7
+   COMPT2 s3, s4, t1
+   COMPT3 s4, s5, t2
+   AND.W t2, t1
+   INV.W t1
+   XOR.W t1, s7
+   MOV.W @kptr, k             ; load key[7]
+   XOR.W k, s7
+   ENDM   
+   
+; update the entire 128-bit state
+UPDATE_STATE MACRO
+    COMPS0
+    COMPS1
+    COMPS2
+    COMPS3
+    COMPS4
+    COMPS5
+    COMPS6
+    COMPS7
+    SUB.W #14, kptr             ; reset kptr, incremented by 2 after every step
+    ENDM
+
+;-------------------------------- Directives -----------------------------------
+
+NAME state_update          
+PUBLIC state_update                                       
+RSEG CODE
+
+;---------------------------------- Main ---------------------------------------
+
+state_update:
+  PROLOGUE
+  LOAD_STATE
+  PUSH.W sptr                 ; free up register
+      
+      loop:
+      UPDATE_STATE
+      SUB.W #128, ctr
+      JNZ loop
+  
+  POP.W sptr
+  SAVE_STATE
+  EPILOGUE 
+  RET
+
+END
